@@ -41,6 +41,7 @@ public class SimpleApplication extends Application<Configuration> {
         org.jooq.Configuration jooqConfig = setupJooq();
         ReceiptDao receiptDao = new ReceiptDao(jooqConfig);
         TagDao tagDao = new TagDao(jooqConfig);
+        //tagDao.insertsomedata();
 
         // Register all Controllers below.  Don't forget 
         // you need class and method @Path annotations!

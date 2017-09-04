@@ -27,6 +27,7 @@ public class TagController {
     final TagDao tags;
 
 
+
     public TagController(TagDao tags, ReceiptDao receipts) {
         this.tags = tags;
         this.receipts = receipts;
@@ -56,6 +57,8 @@ public class TagController {
         }
         else {
             int tagid = tags.insert(tag);
+            System.out.println("tagid");
+            System.out.println(tagid);
             tags.insertTagReceipt(tagid,receiptid);
             return "tag";
         }

@@ -32,10 +32,19 @@ public class TagDao {
     }
 
     public void insertTagReceipt(int tagid, int receiptid){
-        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.TAGID,TAGRECEIPTS.RECEIPTSID).values(tagid,receiptid);
+        System.out.println("I am in insertTagReceipt");
+        System.out.println(tagid);
+        System.out.println(receiptid);
+        System.out.println(dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.TAGID,TAGRECEIPTS.RECEIPTSID).values(tagid,receiptid));
+        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.TAGID,TAGRECEIPTS.RECEIPTSID)
+                .values(tagid,receiptid)
+                .returning(TAGS.ID)
+                .fetchOne();;
     }
 
     public boolean tagExists(String tag){
+        System.out.println("I am in tagExist");
+        System.out.println(dsl.fetchExists(TAGS,TAGS.TAG.eq(tag)));
         return dsl.fetchExists(TAGS,TAGS.TAG.eq(tag));
     }
 
@@ -44,15 +53,31 @@ public class TagDao {
     }
 
     public boolean tagreceiptExists(int tagid, int receiptid){
+        System.out.println("I am in tagreceiptExist");
+        System.out.println(dsl.fetchExists(TAGRECEIPTS,TAGRECEIPTS.TAGID.eq(tagid).and(TAGRECEIPTS.RECEIPTSID.eq(receiptid))));
         return dsl.fetchExists(TAGRECEIPTS,TAGRECEIPTS.TAGID.eq(tagid).and(TAGRECEIPTS.RECEIPTSID.eq(receiptid)));
     }
 
     public void delete(int tagid, int receiptid){
+        System.out.println("I am in tagreceiptsdelete");
         dsl.delete(TAGRECEIPTS)
                 .where(TAGRECEIPTS.TAGID.eq(tagid))
                 .and(TAGRECEIPTS.RECEIPTSID.eq(receiptid))
                 .execute();
     }
+
+    /*public void insertsomedata(){
+        dsl.insertInto(RECEIPTS,RECEIPTS.MERCHANT,RECEIPTS.AMOUNT).values("Ice cream",new java.math.BigDecimal(22.5));
+        dsl.insertInto(RECEIPTS,RECEIPTS.MERCHANT,RECEIPTS.AMOUNT).values("Cake",new java.math.BigDecimal(23.5));
+        dsl.insertInto(TAGS,TAGS.TAG).values("Ice");
+        dsl.insertInto(TAGS,TAGS.TAG).values("Sweet");
+        dsl.insertInto(TAGS,TAGS.TAG).values("Round");
+        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.RECEIPTSID,TAGRECEIPTS.TAGID).values(1,1);
+        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.RECEIPTSID,TAGRECEIPTS.TAGID).values(1,2);
+        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.RECEIPTSID,TAGRECEIPTS.TAGID).values(2,2);
+        dsl.insertInto(TAGRECEIPTS,TAGRECEIPTS.RECEIPTSID,TAGRECEIPTS.TAGID).values(2,3);
+
+    }*/
 
 
 }
