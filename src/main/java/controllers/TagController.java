@@ -77,6 +77,7 @@ public class TagController {
         for (int id: receiptIDs) {
             ReceiptRecords.add(receipts.getReceiptFromID(id));
         }
+
         return ReceiptRecords.stream().map(ReceiptResponse::new).collect(toList());
     }
 
