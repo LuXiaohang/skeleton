@@ -68,6 +68,7 @@ public class TagController {
     @GET
     public List<ReceiptResponse> getTagReceipts(@NotNull @PathParam("tag") String tag) {
         System.out.println(tag);
+        if(!tags.tagExists(tag)){new WebApplicationException("tag does not exist", Response.Status.NOT_FOUND);}
         int tagid=tags.getTagid(tag);
         List<Integer> receiptIDs = receipts.getReceiptIdByTagid(tagid);
 

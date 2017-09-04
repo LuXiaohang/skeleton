@@ -44,7 +44,7 @@ public class TagDao {
 
     public boolean tagExists(String tag){
         System.out.println("I am in tagExist");
-        System.out.println(dsl.fetchExists(TAGS,TAGS.TAG.eq(tag)));
+        //System.out.println(dsl.fetchExists(TAGS,TAGS.TAG.eq(tag)));
         return dsl.fetchExists(TAGS,TAGS.TAG.eq(tag));
     }
 
