@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.ArrayList;
 import javax.ws.rs.core.Response;
 
 import static java.util.stream.Collectors.toList;
@@ -22,16 +23,19 @@ import static java.util.stream.Collectors.toList;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class TagController {
-    ReceiptDao receipts;
+    final ReceiptDao receipts;
     final TagDao tags;
 
 
-    public TagController(TagDao tags) {
+    public TagController(TagDao tags, ReceiptDao receipts) {
         this.tags = tags;
+        this.receipts = receipts;
     }
 
     @PUT
     public String toggleTag(@PathParam("tag") String tag,int receiptid) {
+        System.out.println(tag);
+        System.out.println(receiptid);
         if (!receipts.idExists(receiptid)) {
             return "no such receiptid";
         }
@@ -59,9 +63,18 @@ public class TagController {
     }
 
     @GET
-    public List<ReceiptResponse> getTagReceipts(String tag) {
-        List<ReceiptsRecord> receiptRecords = receipts.getAllTagReceipts(tag);
-        return receiptRecords.stream().map(ReceiptResponse::new).collect(toList());
+    public List<ReceiptResponse> getTagReceipts(@NotNull @PathParam("tag") String tag) {
+        System.out.println(tag);
+        int tagid=tags.getTagid(tag);
+        List<Integer> receiptIDs = receipts.getReceiptIdByTagid(tagid);
+
+        // search through the receipt table to retrieve all the receipt with certain tag id
+        List<ReceiptsRecord> ReceiptRecords = new ArrayList<ReceiptsRecord>();
+
+        for (int id: receiptIDs) {
+            ReceiptRecords.add(receipts.getReceiptFromID(id));
+        }
+        return ReceiptRecords.stream().map(ReceiptResponse::new).collect(toList());
     }
 
 

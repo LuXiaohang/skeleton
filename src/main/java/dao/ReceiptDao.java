@@ -1,6 +1,7 @@
 package dao;
 
 import api.ReceiptResponse;
+import generated.tables.Receipts;
 import generated.tables.Tagreceipts;
 import generated.tables.records.ReceiptsRecord;
 import generated.tables.records.TagsRecord;
@@ -12,6 +13,7 @@ import dao.TagDao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkState;
 import static generated.Tables.RECEIPTS;
@@ -39,16 +41,23 @@ public class ReceiptDao {
     }
 
     public List<ReceiptsRecord> getAllReceipts() {
+        System.out.println(dsl.selectFrom(RECEIPTS).fetch());
         return dsl.selectFrom(RECEIPTS).fetch();
     }
 
-// return all the receipts defined by a tag
-    public List<ReceiptsRecord> getAllTagReceipts(String tag){
-        int tagid = dsl.selectFrom(TAGS).where(TAGS.TAG.eq(tag)).fetchOne().getId();
-        return dsl.selectFrom(RECEIPTS).fetch();
-                //dsl.select().from(RECEIPTS).join(TAGRECEIPTS).on(RECEIPTS.ID.eq(TAGRECEIPTS.RECEIPTSID)).where(TAGRECEIPTS.TAGID.eq(tagid)).fetch();
-
+    // return all the receiptsid defined by a tagid
+    public ReceiptsRecord getReceiptFromID(int id){
+        return dsl.selectFrom(RECEIPTS).where(RECEIPTS.ID.eq(id)).fetchOne();
     }
+
+    public List<Integer> getReceiptIdByTagid(int tagid){
+        return dsl.selectFrom(TAGRECEIPTS).where(TAGRECEIPTS.TAGID.eq(tagid)).fetch(TAGRECEIPTS.RECEIPTSID);
+    }
+
+
+
+
+
 // indentify if a receipt id exists
     public boolean idExists(int receiptId){
         return dsl.fetchExists(RECEIPTS,RECEIPTS.ID.eq(receiptId));
