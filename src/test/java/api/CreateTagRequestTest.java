@@ -10,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-public class CreateTagTest {
+public class CreateTagRequestTest {
     private final Validator validator = Validators.newValidator();
 
     @Test
@@ -23,7 +23,7 @@ public class CreateTagTest {
 
     @Test
     public void testMissingTagName() {
-        CreateTagRequest tag = new CreateTagRequest();
+        CreateTagRequest tag = new CreateTagRequest()
         assertThat(validator.validate(tag), hasSize(1));
     }
 
