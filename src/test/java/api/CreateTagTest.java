@@ -18,7 +18,7 @@ public class CreateTagTest {
         CreateTagRequest tag = new CreateTagRequest();
         tag.tag = "OK";
 
-        assertThat(validator.validate(receipt), empty());
+        assertThat(validator.validate(tag), empty());
     }
 
     @Test
