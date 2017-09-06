@@ -23,7 +23,7 @@ public class CreateTagRequestTest {
 
     @Test
     public void testMissingTagName() {
-        CreateTagRequest tag = new CreateTagRequest()
+        CreateTagRequest tag = new CreateTagRequest();
         assertThat(validator.validate(tag), hasSize(1));
     }
 
