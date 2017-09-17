@@ -35,12 +35,9 @@ public class TagController {
 
 
     @PUT
-    public String toggleTag(@PathParam("tag") String tag,int receiptid) {
+    public void toggleTag(@PathParam("tag") String tag,int receiptid) {
         System.out.println(tag);
         System.out.println(receiptid);
-        if (!receipts.idExists(receiptid)) {
-            return "no such receiptid";
-        }
 
         // find or create tag by tagname and receiptid
         // first find if exists this tag, if yes, find if there is link to the receipt id, if yes,delete;no,create
@@ -49,11 +46,10 @@ public class TagController {
             int tagid = tags.getTagid(tag);
             if(tags.tagreceiptExists(tagid,receiptid)){
                 tags.delete(tagid,receiptid);
-                return "untag";
+
             }
             else {
                 tags.insertTagReceipt(tagid,receiptid);
-                return "tag";
             }
         }
         else {
@@ -61,7 +57,7 @@ public class TagController {
             System.out.println("tagid");
             System.out.println(tagid);
             tags.insertTagReceipt(tagid,receiptid);
-            return "tag";
+
         }
 
     }

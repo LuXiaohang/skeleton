@@ -1,8 +1,15 @@
+//const api = "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080";
+const api = "http://localhost:8080";
 $(function(){
-	const api = "http://localhost:8080";
+	
 	$.getJSON(api+"/receipts", function(receipts){
 		for(var i=0; i < receipts.length; i++) {
 			var receipt = receipts[i];
+			var tagHTML = '';
+			k=i+1
+			$.each(receipt.tags, function (j, tag) {
+                tagHTML += '<p><button class="btn btn-success tagValue" id=\''+k+tag+'\' receiptid=\''+k+'\' tag=\''+tag+'\' onclick="dissociatetag(this,event)">' + tag + '</button></p>';
+            })
 			$(`<div class="row contentstyle">
 				<div class="col-md-2"></div>
 				<div class="col-md-8 receipt" id="${receipt.id}">
@@ -10,6 +17,7 @@ $(function(){
 				<div class="col-xs-6  col-sm-3"><p class="merchant">${receipt.merchantName}</p></div>
 				<div class="col-xs-6  col-sm-3"><p class="amount">${receipt.amount}</p></div>
 				<div class="col-xs-6  col-sm-3" id="tagInput">
+				${tagHTML}
 				<p><button class="btn btn-info add-tag" onclick="addInputTag(this,event)">ADD+</button></p>
 				</div>
 				</div>
@@ -28,82 +36,101 @@ function puttag(a,e){
 	if(e.keyCode==13){
 		var tag = $(a).val();
 		var id = $(a).parent().parent().attr("id");
+		if($("#"+id+tag).length>0){
+			$(a).remove();
+			dissociatetag($("#"+id+tag),"hh");
+		}
+		else{
+			$.ajax({
+				headers: { 
+					'Accept': 'application/json',
+					'Content-Type': 'application/json' 
+				},
+				type: 'PUT',
+				url: api+"/tags/"+tag,
+				data: JSON.stringify(id),
+				success: function(msg){
+					$(a).replaceWith($('<p><button class="btn btn-success tagValue" id=\''+id+tag+'\' receiptid=\''+id+'\' tag=\''+tag+'\' onclick="dissociatetag(this,event)">' + tag + '</button></p>'));
+				},
+				error: function(jqXHR,err){
+					alert(jqXHR.responseText);
+				}
+			});
+		}}
+	}
+	function dissociatetag(a,e){
+		var tag = $(a).attr("tag");
+		var id = $(a).attr("receiptid");
+		b = $(a).parent();
 		$.ajax({
 			headers: { 
 				'Accept': 'application/json',
 				'Content-Type': 'application/json' 
 			},
 			type: 'PUT',
-			url: "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080/tags/"+tag+"?"+id,
+			url: api+"/tags/"+tag,
 			data: JSON.stringify(id),
 			success: function(msg,status, jqXHR){
-				alert(msg);
-				$(a).replaceWith($('<label class="label label-success tagValue" onclick="dissociatetag(this,event,id)">$(tag)</label>'))
+				$(a).remove();
+				$(b).remove();
 			},
-			error: function(err){
+			error: function(jqXHR,err){
 				alert('Error');
 			}
 		});
 	}
-}
-function dissociatetag(a,e,id){
-	var tag = $(a).val();
-	$.ajax({
-			headers: { 
-				'Accept': 'application/json',
-				'Content-Type': 'application/json' 
-			},
-			type: 'PUT',
-			url: "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080/tags/"+tag,
-			data: JSON.stringify(id),
-			success: function(msg,status, jqXHR){
-				$(a).attr("style", "display:none;");
-			},
-			error: function(err){
-				alert('Error');
-			}
-		});
-}
-function numbertest(){
-	$("#amount").val($("#amount").val().replace(/[^0-9.]/g,''));
-}
-
-function postreceipt(){
-	var merchant = $("#merchant").val();
-	var amount = $("#amount").val();
-	if (merchant==""){
-		alert("Merchant Name is required");
+	function numbertest(){
+		$("#amount").val($("#amount").val().replace(/[^0-9.]/g,''));
 	}
-	else{
-		data={"merchant":merchant,"amount":amount};
-		console.log("I am ready to post")
-		$.ajax({
-			headers: { 
-				'Accept': 'application/json',
-				'Content-Type': 'application/json' 
-			},
-			type: "POST",
-			url: "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080/receipts",
-			data: JSON.stringify(data),
-			dataType: 'json',
-			success: function (msg,status, jqXHR) {
-				$("#merchant").val("");
-				$("#amount").val("");
-				alert(msg);
+
+	function postreceipt(){
+		var merchant = $("#merchant").val();
+		var amount = $("#amount").val();
+		if (merchant==""){
+			alert("Merchant Name is required");
+		}
+		else{
+			data={"merchant":merchant,"amount":amount};
+			console.log("I am ready to post")
+			$.ajax({
+				headers: { 
+					'Accept': 'application/json',
+					'Content-Type': 'application/json' 
+				},
+				type: "POST",
+				url: api+"/receipts",
+				data: JSON.stringify(data),
+				dataType: 'json',
+				success: function (msg,status, jqXHR) {
+					$("#merchant").val("");
+					$("#amount").val("");
+					$(`<div class="row contentstyle">
+						<div class="col-md-2"></div>
+						<div class="col-md-8 receipt" id='`+msg+`'>
+						<div class="col-xs-6  col-sm-3"><p class="merchant">time</p></div>
+						<div class="col-xs-6  col-sm-3"><p class="merchant">${merchant}</p></div>
+						<div class="col-xs-6  col-sm-3"><p class="amount">${amount}</p></div>
+						<div class="col-xs-6  col-sm-3" id="tagInput">
+						<p><button class="btn btn-info add-tag" onclick="addInputTag(this,event)">ADD+</button></p>
+						</div>
+						</div>
+						</div>`).appendTo($("#receiptList"));
+
+				//alert(msg);
 			}
 		});
 
+		}
 	}
-}
-function showform(){
-	console.log("i am in showform");
-	$("#addreceiptform").attr("style", "display:block;"); 
-};
+	function showform(){
+		console.log("i am in showform");
+		$("#addreceiptform").attr("style", "display:block;"); 
+	};
 
-function hideform(){
-	console.log("i am in hideform");
-	$("#addreceiptform").attr("style", "display:none;"); 
-	$("#merchant").val("");
+	function hideform(){
+		console.log("i am in hideform");
+		$("#addreceiptform").attr("style", "display:none;"); 
+		$("#merchant").val("");
 
-}
+	}
 

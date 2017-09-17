@@ -40,9 +40,22 @@ public class ReceiptDao {
         return receiptsRecord.getId();
     }
 
-    public List<ReceiptsRecord> getAllReceipts() {
-        System.out.println(dsl.selectFrom(RECEIPTS).fetch());
-        return dsl.selectFrom(RECEIPTS).fetch();
+    public List<ReceiptResponse> getAllReceipts() {
+        List<ReceiptsRecord> records = dsl.selectFrom(RECEIPTS).fetch();
+        ArrayList<ReceiptResponse> responses = new ArrayList<>();
+        for (ReceiptsRecord record : records) {
+            List<TagreceiptsRecord> tagreceiptsRecords = dsl.selectFrom(TAGRECEIPTS).where(TAGRECEIPTS.RECEIPTSID.eq(record.getId())).fetch();
+            List<TagsRecord> tagsRecords= new ArrayList<>();
+            for(TagreceiptsRecord tagreceiptsRecord:tagreceiptsRecords)
+            {
+                TagsRecord tagsRecord = dsl.selectFrom(TAGS).where(TAGS.ID.eq(tagreceiptsRecord.getTagid())).fetchOne();
+                tagsRecords.add(tagsRecord);
+            }
+            ReceiptResponse response = new ReceiptResponse(record);
+            response.setTags(tagsRecords);
+            responses.add(response);
+        }
+        return responses;
     }
 
     // return all the receiptsid defined by a tagid
