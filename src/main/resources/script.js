@@ -1,5 +1,5 @@
-//const api = "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080";
-const api = "http://localhost:8080";
+const api = "http://ec2-13-58-28-38.us-east-2.compute.amazonaws.com:8080";
+//const api = "http://localhost:8080";
 $(function(){
 	
 	$.getJSON(api+"/receipts", function(receipts){
