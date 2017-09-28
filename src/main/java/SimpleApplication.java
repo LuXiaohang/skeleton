@@ -2,6 +2,7 @@ import controllers.HelloWorldController;
 import controllers.StaticHtmlController;
 import controllers.NetidController;
 import controllers.ReceiptController;
+import controllers.ReceiptImageController;
 import controllers.TagController;
 import dao.ReceiptDao;
 import dao.TagDao;
@@ -49,5 +50,6 @@ public class SimpleApplication extends Application<Configuration> {
         env.jersey().register(new ReceiptController(receiptDao));
         env.jersey().register(new NetidController());
         env.jersey().register(new TagController(tagDao,receiptDao));
+        env.jersey().register(new ReceiptImageController());
     }
 }
