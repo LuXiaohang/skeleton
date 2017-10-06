@@ -47,7 +47,25 @@ public class ReceiptImageController {
 
             String merchantName = null;
             BigDecimal amount = null;
-            Map<String,Integer> NameCount = new HashMap<String,Integer>();
+            for (EntityAnnotation annotation : res.getTextAnnotationsList()) {
+                String name=annotation.getDescription();
+                if(!ReceiptImageController.isNumeric(name)){
+                    merchantName=name;
+                    break;
+                }
+
+            }
+            for (EntityAnnotation annotation : res.getTextAnnotationsList()) {
+                String name=annotation.getDescription();
+                System.out.println(name);
+                if(ReceiptImageController.isNumeric(name)){
+                    amount = new BigDecimal(name);
+                }
+
+            }
+
+
+            /* Map<String,Integer> NameCount = new HashMap<String,Integer>();
             int i = 0;
             // Your Algo Here!!
             // Sort text annotations by bounding polygon.  Top-most non-decimal text is the merchant
@@ -69,11 +87,11 @@ public class ReceiptImageController {
                 //out.printf("Text: %s\n", annotation.getDescription());
             }
 
-            /*for (Map.Entry<String, Integer> entry : NameCount.entrySet()) {
+            for (Map.Entry<String, Integer> entry : NameCount.entrySet()) {
 
                 System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 
-            }*/
+            }
             // I define the top most is the first half of the annotation
             // I define the bottom most is the second half of the annotation
             i = 0;
@@ -91,14 +109,14 @@ public class ReceiptImageController {
                     }
                 }
                 else{
-                    if(entry.getValue()>amountvalue && ReceiptImageController.isNumeric(entry.getKey())){
+                    if(entry.getValue()>=amountvalue && ReceiptImageController.isNumeric(entry.getKey())){
                         amountvalue = entry.getValue();
                         amount = new BigDecimal(entry.getKey());
                     }
                 }
             }
             System.out.println(merchantName);
-            System.out.println(amount);
+            System.out.println(amount);*/
             //TextAnnotation fullTextAnnotation = res.getFullTextAnnotation();
             return new ReceiptSuggestionResponse(merchantName, amount);
         }
